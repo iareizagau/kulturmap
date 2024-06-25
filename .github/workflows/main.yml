@@ -1,0 +1,75 @@
+name: Deploy to Cloud Run
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.11
+
+      # - name: Enable Cloud Run API
+      #   run: gcloud services enable run.googleapis.com --project=${{ secrets.GCP_PROJECT_ID }}
+
+
+      - name: Install Dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Authenticate with GCP
+        uses: google-github-actions/auth@v2
+        with:
+          service_account: 'cloud-run-django@optimum-shore-409919.iam.gserviceaccount.com'
+          credentials_json: ${{ secrets.GCP_AUTH }}
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+
+      - name: auth Configure Docker
+        run: |
+          gcloud auth configure-docker
+    
+
+      - name: Build and Push Docker Image
+        run: |
+          docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/kulturmap .
+          docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/kulturmap
+
+      - name: Debug Print GCP Auth
+        run: |
+          echo "Current GCP Auth:"
+          cat $GOOGLE_APPLICATION_CREDENTIALS
+
+      - name: Reauthenticate with GCP
+        run: gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS
+
+      - name: Deploy to Cloud Run
+        run: |
+          gcloud run deploy kulturmap \
+            --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/kulturmap \
+            --platform managed \
+            --allow-unauthenticated \
+            --region=europe-west1 \
+            --port=8000 \
+            --memory=1Gi \
+            --min-instances=1 \
+            --max-instances=5 \
+            --service-account=cloud-run-django@optimum-shore-409919.iam.gserviceaccount.com \
+            --set-env-vars ENV=pro \
+            --set-env-vars DEBUG=False \
+            --set-env-vars ACCOUNT_DEFAULT_HTTP_PROTOCOL=https \
+            --set-secrets 'DB_PASSWORD=DB_PASSWORD:latest' \
+            --set-secrets 'DB_HOST=DB_HOST:latest' \
+            --set-secrets 'DB_NAME=DB_NAME:latest' \
+            --set-secrets 'DB_USER=DB_USER:latest' \
+            --set-secrets 'DB_PORT=DB_PORT:latest' \
+            --set-secrets 'TELEGRAM_TOKEN=TELEGRAM_TOKEN:latest' \
+            --set-secrets 'SERVICE_ACCOUNT=SERVICE_ACCOUNT:latest'
