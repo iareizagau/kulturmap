@@ -10,7 +10,7 @@ ENV PYTHONDONTWRITEBYTECODE 1
 # stdout and stderr streams are not buffered and sent straight to your terminal
 ENV PYTHONUNBUFFERED 1
 
-ENV APP_HOME=/opendataeuskadi
+ENV APP_HOME=/kulturmap
 ENV LOG_HOME=$APP_HOME/logs
 # ENV APP_USER=appuser
 
@@ -27,7 +27,7 @@ RUN pip install -r requirements.txt
 RUN pip uninstall -y django-allauth
 RUN pip install django-allauth
 
-COPY . /opendataeuskadi/
+COPY . /kulturmap/
 # COPY supervisord.conf /etc/supervisor/supervisord.conf
 
 # RUN python manage.py collectstatic --no-input
@@ -49,6 +49,6 @@ COPY . /opendataeuskadi/
 # USER dockeruser
 
 CMD service redis-server start & \
-    celery -A OpenDataEuskadi beat --loglevel=info & \
-    celery -A OpenDataEuskadi worker --loglevel=info  & \
-    gunicorn --bind 0.0.0.0:8000 OpenDataEuskadi.wsgi:application
+    celery -A KulturMap beat --loglevel=info & \
+    celery -A KulturMap worker --loglevel=info  & \
+    gunicorn --bind 0.0.0.0:8000 KulturMap.wsgi:application
