@@ -4,9 +4,9 @@ from celery.schedules import crontab
 import os
 
 # Set the default Django settings module for the 'celery' program.
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'OpenDataEuskadi.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'KulturMap.settings')
 
-app = Celery('OpenDataEuskadi')
+app = Celery('KulturMap')
 app.conf.enable_utc = False
 app.conf.update(timezone="Europe/Madrid")
 # Using a string here means the worker doesn't have to serialize
@@ -18,14 +18,6 @@ app.autodiscover_tasks()
 
 # Define periodic tasks
 app.conf.beat_schedule = {
-    'telegram_bot': {
-        'task': 'apps.automations.tasks.telegram_bot',
-        'schedule': crontab(minute='5'),
-    },
-    'ingest_traffic_events': {
-        'task': 'apps.automations.tasks.ingest_traffic_events',
-        'schedule': crontab(minute='*/15'),
-    },
     'ingest_culture_events': {
         'task': 'apps.automations.tasks.ingest_culture_events',
         'schedule': crontab(hour='20', minute='00'),

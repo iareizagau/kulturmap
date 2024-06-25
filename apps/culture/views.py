@@ -6,7 +6,7 @@ from django.shortcuts import render
 
 from apps.culture.models import Events, EVENT_TYPE
 
-from OpenDataEuskadi import settings
+from KulturMap import settings
 
 
 # Create your views here.
