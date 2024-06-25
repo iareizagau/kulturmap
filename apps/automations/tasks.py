@@ -9,10 +9,10 @@ from telegram import Bot
 
 from celery import shared_task
 from django.core.mail import send_mail
-import apps.traffic.crud as crud
 from apps.culture.models import Events
+import apps.culture.crud as crud 
 
-from OpenDataEuskadi import settings
+from KulturMap import settings
 
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
@@ -23,18 +23,6 @@ formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(messag
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 
-
-def new_column_value(row):
-    if row['incidenceLevel'] == 'Blanco':
-        return 'table-info'
-    elif row['incidenceLevel'] == 'Amarillo':
-        return 'table-warning'
-    elif row['incidenceLevel'] == 'Negro':
-        return 'table-danger'
-    elif row['incidenceLevel'] == 'Negro':
-        return 'table-danger'
-    else:
-        return 'table-primary'
 
 
 async def telegram_bot(message):
@@ -60,60 +48,6 @@ def telegram_bot():
     print(message)
     logger.error(f"telegram_bot: message {message}")
     logger.warning(f"telegram_bot: message {message}")
-
-
-@shared_task
-def ingest_traffic_events():
-    message = f"Descargando nuevas incidencias | {datetime.now()}"
-    send_message_2_telegram(message, task='ingest_traffic_events')
-    try:
-        headers = dict(accept='application/json')
-        url_base = settings.OPEN_DATA_API_TRAFFIC_INCIDENCES
-        for page_number in range(1, 10):
-            print(f"page_number {page_number}")
-            response = requests.get(url=f'{url_base}_page={page_number}', headers=headers)
-            if response.status_code == 200:
-                data = response.json()
-                incidencias_ = data['incidences']
-                df = pd.DataFrame.from_records(incidencias_)
-                try:
-                    df['startDate'] = pd.to_datetime(df['startDate'], format='mixed')
-                    df['startDate'] = df['startDate'].dt.tz_localize('UTC')
-                    df['startDate'] = df['startDate'].dt.tz_convert('Europe/Madrid')
-                except Exception as e:
-                    print("df['startDate']", df['startDate'])
-                    print("error", 'ingest_traffic_events', e)
-
-                # df['endDate'] = pd.to_datetime(df['endDate'])
-                df['color'] = df.apply(new_column_value, axis=1)
-                created_incidences = crud.insert_incidences(df)
-                if created_incidences:
-                    count = 1
-                    for index, incidence in enumerate(created_incidences):
-                        if incidence.cause != 'Desconocida':
-                            message = (f"new incidence: {index+1}/{len(created_incidences)}\n "
-                                       f"count: {count}\n"
-                                       f"now: {datetime.now().strftime('%Y-%m-%d %H:%M')}\n"
-                                       f"sourceId: {incidence.sourceId}\n"
-                                       f"startDate: {incidence.startDate}\n"
-                                       f"incidenceId: {incidence.incidenceId}\n"
-                                       f"autonomousRegion: {incidence.autonomousRegion}\n"
-                                       f"province: {incidence.province}\n"
-                                       f"cityTown: {incidence.cityTown}\n"
-                                       f"road: {incidence.road}\n"
-                                       f"direction: {incidence.direction}\n"
-                                       f"cause: {incidence.cause}\n"
-                                       f"incidenceType: {incidence.incidenceType}\n"
-                                       f"url {settings.URL_TRAFFIC}")
-
-                            send_message_2_telegram(message, task='inicdences')
-                            count += 1
-                else:
-                    break
-
-        logger.info("ingest_traffic_events")
-    except Exception as e:
-        logger.exception(f"Error. ingest_traffic_events: {e}")
 
 
 @shared_task

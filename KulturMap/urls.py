@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, re_path, include
-from OpenDataEuskadi import settings
+from KulturMap import settings
 
 urlpatterns = [
     re_path('', include('apps.home.urls')),  # landing page
