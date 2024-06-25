@@ -19,11 +19,8 @@ from django.urls import path, re_path, include
 from KulturMap import settings
 
 urlpatterns = [
-    re_path('', include('apps.home.urls')),  # landing page
     re_path('', include('pwa.urls')),
-    re_path('traffic/', include('apps.traffic.urls')),  # landing page
-    re_path('culture/', include('apps.culture.urls')),  # landing page
-    re_path('sbk/', include('apps.sbk.urls')),  # landing page
+    re_path('', include('apps.culture.urls')),  # landing page
     path('admin/', admin.site.urls),
 ]
 
