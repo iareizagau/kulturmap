@@ -1,0 +1,89 @@
+<style>
+    .navbar-brand {
+        font-size: 40px !important; /* default font size */
+    }
+
+    @media (max-width: 1024px) {
+        .navbar-brand {
+            font-size: 80px !important; /* Larger font size for medium screens */
+        }
+        .navbar-toggler {
+            font-size: 50px !important; /* Increase font size for the toggler */
+            width: 2em !important;
+            height: 2em !important;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .navbar-brand {
+            font-size: 40px !important; /* Size for small screens */
+        }
+        .navbar-toggler {
+            font-size: 60px !important; /* Slightly smaller font size for the toggler */
+            width: 4em !important;
+            height: 4em !important;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .navbar-brand {
+            font-size: 70px !important; /* Size for extra small screens */
+        }
+        .navbar-toggler {
+            font-size: 50px !important; /* Even smaller font size for the toggler */
+            width: 3em !important;
+            height: 3em !important;
+        }
+    }
+</style>
+
+<nav class="navbar navbar-expand-lg bg-body-tertiary">
+    <div class="container-fluid">
+        <a id="web-title" class="navbar-brand" href="{% url 'culture:home' %}">Kultur Map</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="{% url 'culture:test' %}">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="#">Contact</a>
+                </li>
+                <li class="nav-item dropdown">
+            </ul>
+            <div class="dropdown">
+                <button class="btn btn-outline-dark dropdown-toggle" type="button" id="themeDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    theme
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="themeDropdown">
+                    <li><a class="dropdown-item" onclick="changeTheme('light')">light <i class="fa-solid fa-sun"></i></a></li>
+                    <li><a class="dropdown-item" onclick="changeTheme('dark')">dark <i class="fa-solid fa-moon"></i></a></li>
+                </ul>
+            </div>
+            {% comment %}
+            <form class="d-flex" role="search">
+                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                <button class="btn btn-outline-success" type="submit">Search</button>
+            </form>
+            {% endcomment %}
+        </div>
+    </div>
+</nav>
+
+<script>
+    function changeTheme(theme) {
+        const html = document.documentElement;
+        html.setAttribute('data-bs-theme', theme);
+        const themeButton = document.getElementById('themeDropdown');
+        if (theme === 'light') {
+            themeButton.classList.remove('btn-outline-light');
+            themeButton.classList.add('btn-outline-dark');
+        } else {
+            themeButton.classList.remove('btn-outline-dark');
+            themeButton.classList.add('btn-outline-light');
+        }
+    }
+</script>

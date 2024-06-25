@@ -1,0 +1,65 @@
+
+
+<div class="card">
+        <img class="card-img-top" src="{{obj.images}}"  alt="..." data-bs-toggle="modal" data-bs-target="#cardModal"
+             data-title="{{obj.nameEu}}"
+             data-date="{{obj.startDate|date:'Y-m-d'}}{% if obj.openingHoursEu != 'nan' %} {{obj.openingHoursEu}} {% endif %}"
+             data-img="{{obj.images}}"
+             data-type="{{obj.typeEu}}"
+             data-price="{{obj.priceEu}}"
+             data-source="{{obj.sourceUrlEu}}"
+             data-establishment="{{obj.establishmentEu}}"
+             data-municipality="{{obj.municipalityEu}}"
+        >
+        {% if obj.typeEu == 'Kontzertua' %}<span class="badge text-bg-primary position-absolute top-0 start-0 m-2 card-text truncate" style="background-color: #5e7008!important;"><i class="fa-solid fa-music"></i> {{obj.typeEu}}</span>
+        {% elif obj.typeEu == 'Hitzaldia' %}<span class="badge text-bg-primary position-absolute top-0 start-0 m-2 card-text truncate"><i class="fa-solid fa-comments"></i> {{obj.typeEu}}</span>
+        {% elif obj.typeEu == 'Bertsolaritza' %}<span class="badge text-bg-primary position-absolute top-0 start-0 m-2 card-text truncate"><i class="fa-solid fa-microphone"></i> {{obj.typeEu}}</span>
+        {% elif obj.typeEu == 'Azoka' %}<span class="badge text-bg-primary position-absolute top-0 start-0 m-2 card-text truncate"><i class="fa-solid fa-store"></i> {{obj.typeEu}}</span>
+        {% elif 'Zinema' in obj.typeEu %}<span class="badge text-bg-primary position-absolute top-0 start-0 m-2 card-text truncate" style="background-color: #CD1719 !important;"><i class="fa-solid fa-film"></i> {{obj.typeEu}}</span>
+        {% elif obj.typeEu == 'Antzerkia' %}<span class="badge text-bg-success position-absolute top-0 start-0 m-2 card-text truncate" style="background-color: #00648F !important;"><i class="fa-solid fa-masks-theater"></i> {{obj.typeEu}}</span>
+        {% elif 'Ekitaldiak' in obj.typeEu %}<span class="badge text-bg-primary position-absolute top-0 start-0 m-2 card-text truncate"><i class="fa-solid fa-calendar-day"></i> {{obj.typeEu}}</span>
+        {% elif obj.typeEu == 'Formakuntza' %}<span class="badge text-bg-primary position-absolute top-0 start-0 m-2 card-text truncate"><i class="fa-solid fa-graduation-cap"></i> {{obj.typeEu}}</span>
+        {% elif obj.typeEu == 'Lehiaketa' %}<span class="badge text-bg-primary position-absolute top-0 start-0 m-2 card-text truncate"><i class="fa-solid fa-trophy"></i> {{obj.typeEu}}</span>
+        {% elif obj.typeEu == 'Erakusketa' %}<span class="badge text-bg-primary position-absolute top-0 start-0 m-2 card-text truncate"><i class="fa-solid fa-graduation-cap"></i> {{obj.typeEu}}</span>
+        {% elif obj.typeEu == 'Dantza' %}<span class="badge text-bg-primary position-absolute top-0 start-0 m-2 card-text truncate"><i class="fa-solid fa-graduation-cap"></i> {{obj.typeEu}}</span>
+        {% elif obj.typeEu == 'Jaialdia' %}<span class="badge text-bg-primary position-absolute top-0 start-0 m-2 card-text truncate"><i class="fa-solid fa-graduation-cap"></i> {{obj.typeEu}}</span>
+        {% elif obj.typeEu == 'Jaiak' %}<span class="badge text-bg-primary position-absolute top-0 start-0 m-2 card-text truncate"><i class="fa-solid fa-graduation-cap"></i> {{obj.typeEu}}</span>
+        {% elif 'Haur' in obj.typeEu %}<span class="badge text-bg-primary position-absolute top-0 start-0 m-2 card-text truncate"><i class="fa-solid fa-children"></i> {{obj.typeEu}}</span>
+        {% else %}<span class="badge text-bg-primary position-absolute top-0 start-0 m-2"><i class="fa-solid fa-wand-magic-sparkles card-text truncate"></i> {{obj.typeEu}}</span>
+        {% endif %}
+        <span class="badge text-bg-light position-absolute top-0 start-50 m-2"><i id="share-button-{{obj.id}}" class="fa-solid fa-share-nodes filter-icon"></i></span>
+</div>
+<span class="translate-middle card-text" style="width: 70%;">{{obj.startDate|date:"Y-m-d"}}</span>
+<h5 class="card-title truncate card-text" title="{{obj.nameEu}}">
+    <a href="{% if obj.sourceUrlEu %}{{obj.sourceUrlEu}}{% endif %}" style="text-decoration: none;">
+        {{obj.nameEu}}
+    </a>
+</h5>
+<a class="card-text" href="{{obj.urlEventEu}}" style="text-decoration: none;">{%if obj.establishmentEu != 'nan' %} {{obj.establishmentEu}} {% else %} {% endif %}</a>
+<span class="card-text"> {{obj.municipalityEu}}</span>
+<a href="https://maps.google.com?q={{obj.municipalityLatitude}},{{obj.municipalityLongitude}}">
+    <i class="fa-solid fa-location-dot filter-icon" title="{{obj.municipalityEu}}"></i>
+</a>
+<i class="fa-regular fa-calendar-plus filter-icon" id="add-to-calendar-{{ forloop.counter }}"></i>
+{%comment%}
+
+
+{%endcomment%}
+<div class="modal fade" id="infoModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Description</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+            <div class="row align-items-center">
+                <div class="col-5"></div>
+            </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

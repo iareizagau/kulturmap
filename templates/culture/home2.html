@@ -1,0 +1,809 @@
+{% extends 'culture/base.html' %}
+{% load static %}
+{% load django_htmx %}
+{% load custom_tags %}
+{% block head %}
+<meta charset="UTF-8">
+<title>Home</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script src="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.81.1/dist/L.Control.Locate.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.81.1/dist/L.Control.Locate.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css" />
+
+<script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster-src.js"></script>
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.14/index.global.min.js'></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+          initialView: 'dayGridMonth',
+          firstDay: 1,
+          width: 800,
+           height: 800,
+           themeSystem: 'bootstrap5',
+              timeZone: 'UTC',
+              events: [
+              {% for obj in objects %}
+                {
+                  id: '{{obj.id}}',
+                  title: "{{obj.nameEu}}",
+                  start: '{{obj.startDate|date:"Y-m-d"}}',
+                  url: "{% url 'culture:event' obj.id %}",
+                    {% if obj.typeEu == 'Kontzertua' %} color: '#5e7008',
+                    {% elif obj.typeEu == 'Hitzaldia' %} color: 'blue',
+                    {% elif obj.typeEu == 'Bertsolaritza' %} color: 'blue',
+                    {% elif obj.typeEu == 'Azoka' %}color: 'blue',
+                    {% elif 'Zinema' in obj.typeEu %}color: '#CD1719',
+                    {% elif obj.typeEu == 'Antzerkia' %}color: '#00648F',
+                    {% elif 'Ekitaldiak' in obj.typeEu %}color: 'blue',
+                    {% elif obj.typeEu == 'Formakuntza' %}color: 'gray',
+                    {% elif obj.typeEu == 'Lehiaketa' %}color: 'gray',
+                    {% elif obj.typeEu == 'Erakusketa' %}color: 'gray',
+                    {% elif obj.typeEu == 'Dantza' %}color: 'gray',
+                    {% elif obj.typeEu == 'Jaialdia' %}color: 'gray',
+                    {% elif obj.typeEu == 'Jaiak' %}color: 'gray',
+                    {% elif 'Haur' in obj.typeEu %}color: 'gray',
+                    {% else %}color: 'gray',
+                    {% endif %}
+                },
+                {% endfor %}
+              ]
+        });
+        calendar.render();
+      });
+
+    </script>
+    <script src="https://unpkg.com/htmx.org@1.9.12/dist/htmx.min.js" defer></script>
+<script src="{% static 'htmx.min.js' %}" defer></script>
+<script src="{% static 'js/htmx/debug.js' %}" defer></script>
+  {% django_htmx_script %}
+
+{% endblock %}
+{% block content %}
+
+<style>
+    #map2 {
+    height: 20vh;
+    border-radius: 5px;
+    font-size: 10px;
+    //left: 5px;
+    margin-right: 0px;
+    g {opacity: 0.3;}
+}
+    #map {
+    height: 70vh;
+    border-radius: 5px;
+    font-size: 10px;
+    //left: 5px;
+    margin-right: 0px;
+    g {opacity: 0.3;}
+}
+
+.autocomplete-items {
+        border: 1px solid #d4d4d4;
+        border-bottom: none;
+        border-top: none;
+        z-index: 99;
+        max-height: 50vh;  /* Set a maximum height */
+        overflow-y: auto;
+    }
+    .autocomplete-items div {
+        padding: 10px;
+        cursor: pointer;
+        background-color: #fff;
+        border-bottom: 1px solid #d4d4d4;
+        z-index: 99;
+    }
+
+    .autocomplete-items div:hover {
+        background-color: #e9e9e9;
+    }
+
+    .autocomplete-active {
+        background-color: DodgerBlue !important;
+        color: #ffffff;
+    }
+
+
+</style>
+    <style>
+        .whatsapp-button {
+            display: inline-block;
+            background-color: #25D366;
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+    </style>
+    <style>
+        .share-button {
+            display: inline-block;
+            background-color: #007BFF;
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+            text-decoration: none;
+            border-radius: 5px;
+            cursor: pointer;
+            position: relative;
+        }
+        .share-menu {
+            display: none;
+            position: absolute;
+            top: 40px;
+            left: 0;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+        }
+        .share-menu a {
+            display: block;
+            padding: 10px;
+            color: #333;
+            text-decoration: none;
+        }
+        .share-menu a:hover {
+            background: #f0f0f0;
+        }
+    </style>
+    <style>
+
+    .form-control {
+      font-size: 14px; /* default font size */
+    }
+        .filter-icon {
+            /* font-size: 24px;  Default size for large screens */
+        }
+        .card-text[data-bs-theme="dark"] {
+            font-size: 16px; /* Size for medium screens */
+            color: #ffffff !important;
+        }
+        .card-text[data-bs-theme="light"] {
+            font-size: 16px; /* Size for medium screens */
+            color: #000000 !important;
+        }
+        .truncate {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 200px; /* Adjust the maximum width as needed */
+        }
+
+        @media (max-width: 1024px) {
+            .form-control {
+              font-size: 40px; /* default font size */
+            }
+            .filter-icon {
+                font-size: 40px; /* Size for medium screens */
+            }
+            .card-text[data-bs-theme="dark"] {
+                font-size: 32px !important; /* Size for medium screens */
+                color: #ffffff !important;
+            }
+            .card-text[data-bs-theme="light"] {
+                font-size: 32px !important; /* Size for medium screens */
+                color: #000000 !important;
+            }
+            .truncate {
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                max-width: 90%; /* Adjust the maximum width as needed */
+            }
+            #map2 {
+                height: 20vh;
+                border-radius: 5px;
+                font-size: 20px;
+                //left: 5px;
+                margin-right: 0px;
+                g {opacity: 0.3;}
+            }
+            #map {
+                height: 70vh;
+                border-radius: 5px;
+                font-size: 40px;
+                //left: 5px;
+                margin-right: 0px;
+                g {opacity: 0.3;}
+            }
+            .marker-cluster-test div {
+                width: 90px;
+                height: 90px;
+                margin-left: 15px;
+                margin-top: 15px;
+                text-align: center;
+                border-radius: 45px;
+                font: 36px "Helvetica Neue", Arial, Helvetica, sans-serif;
+            }
+            .marker-cluster-large-test {
+                margin-left: -60px;
+                margin-top: -60px;
+                width: 120px;
+                height: 120px;
+            }
+            .title-app {
+                font-size: 80px;
+            }
+
+        }
+
+        @media (max-width: 768px) {
+            .filter-icon {
+                font-size: 40px; /* Size for small screens */
+            }
+            .form-control {
+              font-size: 40px; /* default font size */
+            }
+        }
+
+        @media (max-width: 480px) {
+            .filter-icon {
+                font-size: 70px; /* Size for extra small screens */
+            }
+    .form-control {
+      font-size: 50px; /* default font size */
+    }
+        }
+    </style>
+
+<div class="container-fluid">
+    <div id="search" class="row justify-content-center align-items-center" style="height: 5vh; z-index: 10; position: relative;">
+        <div class="col-2"></div>
+        <form class="col-6" method="post">{% csrf_token %}
+            <input id="name" class="form-control card-text" type="text" name="name" placeholder="Bilatu">
+            <div id="autocomplete-name-list" class="autocomplete-items" style="overflow-y: 50vh; z-index: 10"></div>
+        </form>
+        <div class="col-3 mx-2">
+            <button class="btn btn-dark" type="button" name="filter-button" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                <i class="fa-solid fa-sliders" style="color: #ffffff"></i>
+            </button>
+            <button class="btn btn-dark" type="button" name="addevent-button" data-bs-toggle="modal" data-bs-target="#addEventModal">
+                <i class="fa-regular fa-square-plus" style="color: #ffffff"></i>
+            </button>
+            <button class="btn btn-dark" type="button" name="calendar-button" data-bs-toggle="modal" data-bs-target="#calendarModal">
+                <i class="fa-regular fa-calendar" style="color: #ffffff"></i>
+            </button>
+        </div>
+    </div>
+    <div id="icons" class="row justify-content-center align-items-center" style="height: 10vh; z-index: 1; position: relative;">
+        <div class="col-1">
+             <button class="btn btn-light" type="button" title="Anterior">
+                 <i class="fa-solid fa-arrow-left filter-icon"></i>
+             </button>
+        </div>
+        <div class="col-10">
+            <form method="post">{% csrf_token %}
+                <div class="d-flex flex-nowrap overflow-auto" style="width: 100%; -ms-overflow-style: none; scrollbar-width: none;">
+                    {% for obj in total_typeEu %}
+                    <div class="m-2">
+                        <button class="btn btn-light filter-icon" type="submit" title="{{obj}}" name="typeEu" value="{{obj}}">
+                            {% if obj == 'Kontzertua' %}<i class="fa-solid fa-music filter-icon"></i>
+                            {% elif obj == 'Hitzaldia' %}<i class="fa-solid fa-comments filter-icon"></i>
+                            {% elif obj == 'Bertsolaritza' %}<i class="fa-solid fa-microphone filter-icon"></i>
+                            {% elif obj == 'Azoka' %}<i class="fa-solid fa-store filter-icon"></i>
+                            {% elif 'Zinema' in obj %}<i class="fa-solid fa-film filter-icon"></i>
+                            {% elif obj == 'Antzerkia' %}<i class="fa-solid fa-masks-theater filter-icon"></i>
+                            {% elif 'Ekitaldiak' in obj %}<i class="fa-solid fa-calendar-day filter-icon"></i>
+                            {% elif obj == 'Formakuntza' %}<i class="fa-solid fa-graduation-cap filter-icon"></i>
+                            {% elif 'Lehia' in obj %}<i class="fa-solid fa-trophy filter-icon"></i>
+                            {% elif 'Haur' in obj %}<i class="fa-solid fa-child filter-icon"></i><i class="fa-solid fa-child-dress filter-icon"></i>
+                            {% else %}<i class="fa-solid fa-wand-magic-sparkles filter-icon"></i>
+                            {% endif %}
+                            <span>{{obj}}</span>
+                        </button>
+                        <!--<img src="{% static 'img/culture/icon/film.svg' %}" alt="{% static 'img/culture/icon/film.svg' %}">-->
+                    </div>
+                    {% endfor %}
+                </div>
+            </form>
+        </div>
+        <div class="col-1">
+            <button class="btn btn-light" type="button" title="Siguiente">
+                <i class="fa-solid fa-arrow-right filter-icon"></i>
+            </button>
+        </div>
+    </div>
+    <div class="row m-4 d-flex d-none d-sm-flex d-md-flex d-lg-none justify-content-center" style="z-index: 1; position: relative;">
+        <div id="btn-list" class="col-4"><button class="btn btn-outline-dark w-100" onclick="toggleView('list')"><i class="fa-solid fa-list-ul filter-icon"></i></button></div>
+        <div id="btn-map" class="col-4"><button class="btn btn-outline-dark w-100" onclick="toggleView('map')"><i class="fa-solid fa-map-location-dot filter-icon"></i></button></div>
+    </div>
+    <div class="row m-4" style="height: 75vh; z-index: 1; position: relative;">
+        <div id="map_col" class="col-sm-12 col-md-12 col-lg-4">
+            <div class="row justify-content-center d-none d-sm-block d-md-none"> <!-- Add this row -->
+                <button id="card-button" class="col-2 btn btn-primary"><i class="fa-solid fa-border-all"></i></button>
+            </div>
+            <div class="row" id="map"></div>
+        </div>
+        <div id="cards" class="col-sm-12 col-md-12 col-lg-8 justify-content-center" style="border-radius: 5px;">
+            <div class="row justify-content-center d-none d-sm-block d-md-none">
+                <button id="map-button" class="col-2 btn btn-primary"><i class="fa-solid fa-map-location-dot"></i></button>
+            </div>
+            <div class="row" style="overflow-y: auto; height: 75vh;">
+                <div id="card_list" class="row row-cols-sm-1 row-cols-md-1 row-cols-lg-3 g-2">
+                    {% include 'culture/card_list2.html'  with objects=objects %}
+                </div>
+<div class="pagination">
+    <span class="step-links">
+        {% if page_obj.has_previous %}
+            <a href="?page=1">&laquo; first</a>
+            <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+        </span>
+
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}">next</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+        {% endif %}
+    </span>
+</div>
+                <button class="btn btn-light" type="submit" name="ver_mas">ver mas</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Filtros</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+        <form method="post">{% csrf_token %}
+      <div class="modal-body">
+
+                    <div class="row align-items-center">
+                        <div class="col-5">
+                            <label for="municipality">municipality</label>
+                            <select class="form-control" name="municipalityEu" id="municipality">
+                                <option value="">-------</option>
+                                {% for municipality in municipalities %}
+                                <option value="{{municipality}}">{{municipality}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-7">
+                            <label for="customRange3" class="form-label">km</label>
+                            <input type="range" class="form-range" min="0" max="50" step="0.5" id="customRange3" value="{{distance}}">
+                            <span id="rangeValue">{{distance}}</span>
+                        </div>
+                    </div>
+                    <div class="row align-items-center">
+                        <div class="col-6">
+                            <label for="startDate">Start:</label>
+                            <input class="form-control" type="date" id="startDate" name="startDate">
+                        </div>
+                        <div class="col-6">
+                            <label for="endDate">End:</label>
+                            <input class="form-control" type="date" id="endDate" name="endDate">
+                        </div>
+                        {% comment %}
+                        <div class="col-2">
+                            <label for="lastHours">Last hours:</label>
+                            <input class="form-control" type="number" step="1" id="lastHours" name="lastHours">
+                        </div>
+                        {% endcomment %}
+                    </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary">Save changes</button>
+      </div>
+        </form>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="addEventModal" tabindex="-1" aria-labelledby="addEventModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="addEventModalLabel">Add Event</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+        <form method="post">{% csrf_token %}
+            <div class="modal-body">
+                    <div class="row align-items-center">
+                        <div class="col-12">
+                            <label for="name">Name:</label>
+                            <input class="form-control" type="text" id="name2" name="name">
+                        </div>
+                        <div id="_type" class="col-5">
+                            <label for="type">type</label>
+                            <select class="form-control" name="type" id="type">
+                                <option value="">-------</option>
+                                {% for type in total_typeEu %}
+                                <option value="{{type}}">{{type}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div id="_muni" class="col-5">
+                            <label for="municipality2">municipality</label>
+                            <select class="form-control" name="municipalityEu" id="municipality2">
+                                <option value="">-------</option>
+                                {% for municipality in municipalities %}
+                                <option value="{{municipality}}">{{municipality}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div id="map2" class="m-2"></div>
+                        <div id="_img">
+                            <label for="image">Image:</label>
+                            <input id="image" class="form-control" type="file" name="image" accept="/image/*">
+                        </div>
+                        <div id="_establishment" class="col-6">
+                            <label for="establishment">establishment:</label>
+                            <input class="form-control" type="text" id="establishment" name="establishment">
+                        </div>
+                        <div id="_price" class="col-6">
+                            <label for="price">Price:</label>
+                            <input class="form-control" type="text" id="price" name="price">
+                        </div>
+                        <div id="_sourceurl" class="col-6">
+                            <label for="sourceurl">sourceurl:</label>
+                            <input class="form-control" type="text" id="sourceurl" name="sourceurl">
+                        </div>
+                        <div id="_eventurl" class="col-6">
+                            <label for="eventurl">eventurl:</label>
+                            <input class="form-control" type="text" id="eventurl" name="eventurl">
+                        </div>
+                        <div id="_geolocation"></div>
+                        <div id="_description">
+                            <label for="description">description:</label>
+                            <textarea class="form-control" rows="5" id="description" name="description" placeholder="description"></textarea>
+                        </div>
+                    </div>
+                    <div class="row align-items-center">
+                        <div class="col-6">
+                            <label for="startDate2">Start:</label>
+                            <input class="form-control" type="datetime-local" id="startDate2" name="startDate2">
+                        </div>
+                    </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary" name="addEvent" value="addEvent">Add event</button>
+      </div>
+        </form>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="cardModal" tabindex="-1" aria-labelledby="cardModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <a class="source-url" href=""><h1 class="modal-title fs-5" id="cardModalLabel"></h1></a>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+          <div class="row d-flex"><div class="col text-end"><i class="fa-solid fa-bookmark"></i></div><div class="col"><h6 class="text-type"></h6></div></div>
+          <div class="row d-flex"><div class="col text-end"><i class="fa-solid fa-house"></i></div><div class="col"><h6 class="text-establishment"></h6></div></div>
+          <div class="row d-flex"><div class="col text-end"><i class="fa-solid fa-map-location-dot"></i></div><div class="col"><h6 class="text-municipality"></h6></div></div>
+          <div class="row d-flex"><div class="col text-end"><i class="fa-solid fa-calendar-day"></i></div><div class="col"><h6 class="text-date"></h6></div></div>
+          <div class="row d-flex"><div class="col text-end"><i class="fa-solid fa-ticket"></i></div><div class="col"><h6 class="text-price"></h6></div></div>
+          <div class="row d-flex"></div>
+          <img class="img-modal" src="" width="100%">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="calendarModal" tabindex="-1" aria-labelledby="calendarModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-fullscreen">
+    <div class="modal-content">
+      <div class="modal-header">
+        <a class="source-url" href=""><h1 class="modal-title fs-5" id="calendarModalLabel">Calendar</h1></a>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+          <div id='calendar'></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+    const rangeInput = document.getElementById('customRange3');
+    const rangeValue = document.getElementById('rangeValue');
+
+    rangeInput.addEventListener('input', function() {
+        rangeValue.textContent = this.value;
+    });
+</script>
+<script>
+function checkImageURL(url) {
+    return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => resolve(true);
+        img.onerror = () => reject(false);
+        img.src = url;
+    });
+}
+</script>
+<script>
+    var latitude = 42.92252644175441;
+    var longitude = -2.0908440517638573;
+    var zoom_map = 8;
+    var map2 = L.map('map2', {fullscreenControl: true,}).setView([latitude, longitude], zoom_map);
+    var CartoDB_Voyager = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+        maxZoom: 20
+    }).addTo(map2);
+    var marker2 = L.marker();
+    map2.on('click', function(e) {
+        if (marker2) {map2.removeLayer(marker2);}
+        marker2 = L.marker(e.latlng).addTo(map2);
+    });
+</script>
+<script>
+    var latitude = 42.92252644175441;
+    var longitude = -2.0908440517638573;
+    var zoom_map = 8;
+    var map = L.map('map', {fullscreenControl: true,}).setView([latitude, longitude], zoom_map);
+    var markers = L.markerClusterGroup();
+    // https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png
+    var CartoDB_Voyager = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+        maxZoom: 20
+    }).addTo(map);
+    var marker = L.marker();
+    var circle = L.circle()
+    {% for obj in objects %}
+      {% if obj.municipalityLatitude %}
+      try {
+        document.getElementById('add-to-calendar-{{ forloop.counter }}').addEventListener('click', function() {
+            var eventName = "{{obj.nameEu}}";
+            var startDate = "{{obj.startDate|date:'Y-m-d'}}";
+            var location = '{{obj.establishmentEu}}';
+            console.log("add-to-calendar-{{ forloop.counter }}");
+            var googleCalendarUrl = `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(eventName)}&dates=${startDate}&location=${encodeURIComponent(location)}&trp=true&sprop=&sprop=name:`;
+
+            window.open(googleCalendarUrl, '_blank');
+        });
+        }
+      catch (error) {
+      console.log("error", error);
+      }
+        var latitude = parseFloat("{{obj.municipalityLatitude}}".replace(",", "."));
+        var longitude = parseFloat("{{obj.municipalityLongitude}}".replace(",", "."));
+        var imageUrl = "{{obj.images}}";
+        var popupContent = "None1";
+        checkImageURL(imageUrl)
+            .then(isValid => {
+                if (isValid) {
+                    popupContent = `{% include 'culture/card.html' %}`;
+                }
+            })
+            .catch(() => {
+                //console.error('Image URL is invalid.');
+            });
+        try{
+
+            var popupContent = `{% include 'culture/card.html' %}`;
+            marker = L.marker([latitude, longitude]).bindPopup(popupContent);
+            markers.addLayer(marker);
+        }
+        catch (error){
+        console.log("error", error);
+        }
+        //circle = L.circle([latitude, longitude], {color: 'green', fillColor: 'green', fillOpacity: 0.5, radius: 2000 }).addTo(map);
+      {% endif %}
+    {% endfor %}
+    map.addLayer(markers);
+var locateControl = L.control.locate({
+    flyTo: true,
+    keepCurrentZoomLevel: true,
+    initialZoomLevel: 10
+    }).addTo(map);
+function onLocationFound(e) {
+{% include 'culture/filter_distance.html' %}
+}
+
+// Add event listener for location found
+map.on('locationfound', onLocationFound);
+
+// Add event listener for location error
+map.on('locationerror', function(e) {
+    alert("Error finding your location: " + e.message);
+});
+
+map.on('click', function(e) {
+    var distance = {{distance}} * 1000; // Default distance in meters
+    var circleOptions = {
+        radius: distance, // Set default radius
+        color: 'red' // Set default color
+    };
+
+        {% include 'culture/filter_distance.html' %}
+        var popLocation= e.latlng;
+        var popup = L.popup()
+        .setLatLng(popLocation)
+        .setContent(count + ' Kultur ekintza inguruan')
+        .openOn(map);
+    });
+</script>
+<script>
+const suggestions_name = [{% for obj in objects %}"{{ obj.nameEu }}"{% if not forloop.last %},{% endif %}{% endfor %}];
+const suggestions_municipality = [{% for obj in objects %}"{{ obj.municipalityEu }}"{% if not forloop.last %},{% endif %}{% endfor %}];
+
+document.getElementById('name').addEventListener('input', function () {
+    var input = this.value;
+    console.log("input", input);
+    var autocompleteNameList = document.getElementById('autocomplete-name-list');
+    autocompleteNameList.innerHTML = '';
+    if (input.length < 3) {
+            return false;
+        }
+    suggestions_name.filter(item => item.toLowerCase().includes(input.toLowerCase()))
+           .forEach(item => {
+           var itemDiv = document.createElement('div');
+                itemDiv.textContent = item;
+                itemDiv.addEventListener('click', function () {
+                    document.getElementById('name').value = this.textContent;
+                    autocompleteNameList.innerHTML = '';
+                });
+                itemDiv.className = 'suggestion-item';
+                console.log("itemDiv", itemDiv);
+                autocompleteNameList.appendChild(itemDiv);
+            });
+});
+document.addEventListener('click', function (e) {
+        if (!e.target.matches('#name')) {
+            document.getElementById('autocomplete-name-list').innerHTML = '';
+        }
+    });
+const style = document.createElement('style');
+style.textContent = `
+    .suggestion-item {
+        padding: 10px;
+        cursor: pointer;
+    }
+    .suggestion-item:hover {
+        background-color: #f0f0f0;
+    }
+    #autocompleteNameList {
+        max-height: 40vh;
+        overflow-y: auto;
+    }
+`;
+</script>
+<script>
+    function toggleView(view) {
+        var map = document.getElementById('map_col');
+        var list = document.getElementById('cards');
+        const btnList = document.getElementById('btn-list');
+        const btnMap = document.getElementById('btn-map');
+
+        if (view === 'list') {
+            map.style.display = 'none';
+            list.style.display = 'block';
+            btnList.classList.add('active');
+            btnMap.classList.remove('active');
+        } else {
+            map.style.display = 'block';
+            list.style.display = 'none';
+            btnMap.classList.add('active');
+            btnList.classList.remove('active');
+        }
+    }
+
+</script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+<script>
+    // JavaScript to handle the modal content update
+    $('#infoModal').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget); // Button that triggered the modal
+        var text = button.data('text'); // Extract info from data-* attributes
+        var modal = $(this);
+        modal.find('.modal-body').text(text);
+    });
+    // JavaScript to handle the modal content update
+    $('#cardModal').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget); // Button that triggered the modal
+        var title = button.data('title'); // Extract info from data-* attributes
+        var date = button.data('date'); // Extract info from data-* attributes
+        var image = button.data('img'); // Extract info from data-* attributes
+        var type = button.data('type'); // Extract info from data-* attributes
+        var price = button.data('price'); // Extract info from data-* attributes
+        var source = button.data('source'); // Extract info from data-* attributes
+        var establishment = button.data('establishment'); // Extract info from data-* attributes
+        var municipality = button.data('municipality'); // Extract info from data-* attributes
+
+        var modal = $(this);
+        modal.find('.text-date').text(date);
+        modal.find('.modal-title').text(title);
+        modal.find('.text-type').text(type);
+        modal.find('.text-price').text(price);
+        modal.find('.text-establishment').text(establishment);
+        modal.find('.text-municipality').text(municipality);
+        modal.find('.source-url').attr('href', source);
+        modal.find('.img-modal').attr('src', image); // Use .attr() to set the src attribute
+    });
+</script>
+<script>
+    {% for obj in objects %}
+        document.getElementById('share-button-{{obj.id}}').addEventListener('click', function() {
+            var url = "{% url 'culture:event' obj.id %}";
+            var title = document.title;
+            var text = "{{obj.nameEu}} - {{obj.startDate}} - {{obj.priceEu}}";
+
+            if (navigator.share) {
+                navigator.share({
+                    title: title,
+                    text: text,
+                    url: url
+                }).then(() => {
+                    console.log('Compartido exitosamente', text);
+                }).catch((error) => {
+                    console.log('Error al compartir:', error);
+                });
+            } else {
+                alert('La API de Web Share no es compatible con este navegador. Puedes copiar y compartir la URL manualmente: ' + url);
+            }
+        });
+    {% endfor %}
+function detectDeviceType() {
+    var map = document.getElementById('map_col');
+    var list = document.getElementById('cards');
+    // Get the width of the viewport
+    var screenWidth = window.innerWidth;
+    console.log("screenWidth", screenWidth);
+    if (screenWidth < 576) {
+        map.style.display = 'none';
+        list.style.display = 'block';
+        btnList.classList.add('active');
+        btnMap.classList.remove('active');
+        return "Mobile";
+    } else if (screenWidth < 992) {
+        return "Tablet";
+        //console.log("type", "tablet");
+    } else if (screenWidth < 1200) {
+        //console.log("type", "laptop");
+        return "Laptop";
+    } else {
+        return "PC";
+    }
+}
+    detectDeviceType()
+    </script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // Elementos DOM
+    var iconContainer = document.querySelector(".overflow-auto");
+    var leftArrow = document.querySelector(".fa-arrow-left");
+    var rightArrow = document.querySelector(".fa-arrow-right");
+
+    // Valor de desplazamiento en píxeles
+    var scrollAmount = 200;
+
+    // Desplazamiento hacia la izquierda
+    leftArrow.addEventListener("click", function() {
+        iconContainer.scrollLeft -= scrollAmount;
+        console.log("Desplazamiento hacia la izquierda");
+    });
+
+    // Desplazamiento hacia la derecha
+    rightArrow.addEventListener("click", function() {
+        iconContainer.scrollLeft += scrollAmount;
+        console.log("Desplazamiento hacia la derecha");
+    });
+});
+</script>
+{% endblock %}

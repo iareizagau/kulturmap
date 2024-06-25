@@ -1,0 +1,27 @@
+    if (circle) {map.removeLayer(circle);}
+    var cards = document.getElementById("card_list");
+    cards.innerHTML = ``;
+    var distance_km = {{distance}}
+    var distance = distance_km * 1000; // Default distance in meters
+    var circleOptions = {
+        radius: distance, // Set default radius
+        color: 'red' // Set default color
+    };
+
+    circle = L.circle(e.latlng, circleOptions).addTo(map);
+    var fromLatLng = new L.LatLng(e.latlng['lat'], e.latlng['lng']);
+    var count = 0;
+    {% for obj in objects %}
+      {% if obj.municipalityLatitude %}
+        var latitude = parseFloat("{{obj.municipalityLatitude}}".replace(",", "."));
+        var longitude = parseFloat("{{obj.municipalityLongitude}}".replace(",", "."));
+        var toLatLng = new L.latLng(latitude, longitude);
+        var distance_geo = fromLatLng.distanceTo(toLatLng)/1000;
+        if (distance_geo < distance_km){
+            count = count + 1;
+            var cardDiv = document.createElement("div");
+            cardDiv.innerHTML = `{% include 'culture/card.html' %}`
+            cards.appendChild(cardDiv);
+        }
+      {% endif %}
+    {% endfor %}
