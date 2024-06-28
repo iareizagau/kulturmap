@@ -3,11 +3,31 @@ import pandas as pd
 from datetime import datetime, timedelta
 
 from django.shortcuts import render
+from django.http import JsonResponse
+
 
 from apps.culture.models import Events, EVENT_TYPE
 
 from KulturMap import settings
 
+def play_console(request, **kwargs):
+    json_data = [
+            {
+                "relation": [
+                "delegate_permission/common.handle_all_urls"
+                ],
+                "target": {
+                "namespace": "android_app",
+                "package_name": "app.run.a.opendataeuskadi_z6zzxsqmma_ew.twa",
+                "sha256_cert_fingerprints": [
+                    "94:BE:68:73:23:3D:22:94:5E:07:9B:3B:7A:E5:ED:B2:43:62:86:89:02:BB:BC:A7:FB:97:EE:DA:FE:AD:67:6A"
+                ]
+                }
+            }
+            ]
+
+    return JsonResponse(json_data)
+    
 
 # Create your views here.
 def culture(request, **kwargs):
