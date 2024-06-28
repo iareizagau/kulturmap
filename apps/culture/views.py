@@ -26,7 +26,7 @@ def play_console(request, **kwargs):
             }
             ]
 
-    return JsonResponse(json_data)
+    return JsonResponse(json_data, safe=False)
     
 
 # Create your views here.
