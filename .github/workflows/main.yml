@@ -60,9 +60,9 @@ jobs:
             --allow-unauthenticated \
             --region=europe-west1 \
             --port=8000 \
-            --memory=1Gi \
+            --memory=500MB \
             --min-instances=1 \
-            --max-instances=5 \
+            --max-instances=1 \
             --service-account=cloud-run-django@optimum-shore-409919.iam.gserviceaccount.com \
             --set-env-vars ENV=pro \
             --set-env-vars DEBUG=False \
