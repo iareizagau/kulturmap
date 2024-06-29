@@ -496,20 +496,18 @@ function checkImageURL(url) {
     {% include 'culture/evet_for_loop.html' %}
     map.addLayer(markers);
     {% if city %}
-    var marker_city = L.marker()
-    var circle_city = L.circle();
-    if (marker_city) {map.removeLayer(marker_city);}
-    if (circle_city) {map.removeLayer(circle_city);}
+        var marker_city = L.marker()
+        var circle_city = L.circle();
+        if (marker_city) {map.removeLayer(marker_city);}
+        if (circle_city) {map.removeLayer(circle_city);}
 
-    var circleOptions = {
-        radius: {{ custom_distance }}, // Set default radius
-        color: 'red' // Set default color
-    };
+        var circleOptions = {
+            radius: {{ custom_distance }}, // Set default radius
+            color: 'red' // Set default color
+        };
 
         var latitude_city = parseFloat("{{city.municipalityLatitude}}".replace(",", "."));
         var longitude_city = parseFloat("{{city.municipalityLongitude}}".replace(",", "."));
-        console.log("latitude_city", latitude_city);
-        console.log("longitude_city", longitude_city);        
         //circle_city = L.circle([latitude_city, latitude_city], {color: 'green', fillColor: 'green', fillOpacity: 0.5, radius: {{ custom_distance }}}).addTo(map);
         marker_city = L.marker([latitude_city, longitude_city]).addTo(map)
         circle_city = L.circle([latitude_city, longitude_city], circleOptions).addTo(map);        
