@@ -1,0 +1,41 @@
+{% for obj in objects %}
+{% if obj.municipalityLatitude %}
+try {
+  document.getElementById('add-to-calendar-{{ forloop.counter }}').addEventListener('click', function() {
+      var eventName = "{{obj.nameEu}}";
+      var startDate = "{{obj.startDate|date:'Y-m-d'}}";
+      var location = '{{obj.establishmentEu}}';
+      console.log("add-to-calendar-{{ forloop.counter }}");
+      var googleCalendarUrl = `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(eventName)}&dates=${startDate}&location=${encodeURIComponent(location)}&trp=true&sprop=&sprop=name:`;
+
+      window.open(googleCalendarUrl, '_blank');
+  });
+  }
+catch (error) {
+console.log("error", error);
+}
+  var latitude = parseFloat("{{obj.municipalityLatitude}}".replace(",", "."));
+  var longitude = parseFloat("{{obj.municipalityLongitude}}".replace(",", "."));
+  var imageUrl = "{{obj.images}}";
+  var popupContent = "None1";
+  checkImageURL(imageUrl)
+      .then(isValid => {
+          if (isValid) {
+              popupContent = `{% include 'culture/card.html' %}`;
+          }
+      })
+      .catch(() => {
+          //console.error('Image URL is invalid.');
+      });
+  try{
+
+      var popupContent = `{% include 'culture/card.html' %}`;
+      marker = L.marker([latitude, longitude]).bindPopup(popupContent);
+      markers.addLayer(marker);
+  }
+  catch (error){
+  console.log("error", error);
+  }
+  //circle = L.circle([latitude, longitude], {color: 'green', fillColor: 'green', fillOpacity: 0.5, radius: 2000 }).addTo(map);
+{% endif %}
+{% endfor %}

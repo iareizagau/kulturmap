@@ -1,0 +1,41 @@
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var calendarEl = document.getElementById('calendar');
+      var calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        firstDay: 1,
+        width: 800,
+         height: 800,
+         themeSystem: 'bootstrap5',
+            timeZone: 'UTC',
+            events: [
+            {% for obj in objects %}
+              {
+                id: '{{obj.id}}',
+                title: "{{obj.nameEu}}",
+                start: '{{obj.startDate|date:"Y-m-d"}}',
+                url: "{% url 'culture:event' obj.id %}",
+                  {% if obj.typeEu == 'Kontzertua' %} color: '#5e7008',
+                  {% elif obj.typeEu == 'Hitzaldia' %} color: 'blue',
+                  {% elif obj.typeEu == 'Bertsolaritza' %} color: 'blue',
+                  {% elif obj.typeEu == 'Azoka' %}color: 'blue',
+                  {% elif 'Zinema' in obj.typeEu %}color: '#CD1719',
+                  {% elif obj.typeEu == 'Antzerkia' %}color: '#00648F',
+                  {% elif 'Ekitaldiak' in obj.typeEu %}color: 'blue',
+                  {% elif obj.typeEu == 'Formakuntza' %}color: 'gray',
+                  {% elif obj.typeEu == 'Lehiaketa' %}color: 'gray',
+                  {% elif obj.typeEu == 'Erakusketa' %}color: 'gray',
+                  {% elif obj.typeEu == 'Dantza' %}color: 'gray',
+                  {% elif obj.typeEu == 'Jaialdia' %}color: 'gray',
+                  {% elif obj.typeEu == 'Jaiak' %}color: 'gray',
+                  {% elif 'Haur' in obj.typeEu %}color: 'gray',
+                  {% else %}color: 'gray',
+                  {% endif %}
+              },
+              {% endfor %}
+            ]
+      });
+      calendar.render();
+    });
+
+  </script>

@@ -14,48 +14,8 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css" />
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css" />
 <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster-src.js"></script>
-    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.14/index.global.min.js'></script>
-    <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        var calendarEl = document.getElementById('calendar');
-        var calendar = new FullCalendar.Calendar(calendarEl, {
-          initialView: 'dayGridMonth',
-          firstDay: 1,
-          width: 800,
-           height: 800,
-           themeSystem: 'bootstrap5',
-              timeZone: 'UTC',
-              events: [
-              {% for obj in objects %}
-                {
-                  id: '{{obj.id}}',
-                  title: "{{obj.nameEu}}",
-                  start: '{{obj.startDate|date:"Y-m-d"}}',
-                  url: "{% url 'culture:event' obj.id %}",
-                    {% if obj.typeEu == 'Kontzertua' %} color: '#5e7008',
-                    {% elif obj.typeEu == 'Hitzaldia' %} color: 'blue',
-                    {% elif obj.typeEu == 'Bertsolaritza' %} color: 'blue',
-                    {% elif obj.typeEu == 'Azoka' %}color: 'blue',
-                    {% elif 'Zinema' in obj.typeEu %}color: '#CD1719',
-                    {% elif obj.typeEu == 'Antzerkia' %}color: '#00648F',
-                    {% elif 'Ekitaldiak' in obj.typeEu %}color: 'blue',
-                    {% elif obj.typeEu == 'Formakuntza' %}color: 'gray',
-                    {% elif obj.typeEu == 'Lehiaketa' %}color: 'gray',
-                    {% elif obj.typeEu == 'Erakusketa' %}color: 'gray',
-                    {% elif obj.typeEu == 'Dantza' %}color: 'gray',
-                    {% elif obj.typeEu == 'Jaialdia' %}color: 'gray',
-                    {% elif obj.typeEu == 'Jaiak' %}color: 'gray',
-                    {% elif 'Haur' in obj.typeEu %}color: 'gray',
-                    {% else %}color: 'gray',
-                    {% endif %}
-                },
-                {% endfor %}
-              ]
-        });
-        calendar.render();
-      });
-
-    </script>
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.14/index.global.min.js'></script>
+{% include 'culture/calendar_script.html' %}
 {% endblock %}
 {% block content %}
 
@@ -64,7 +24,6 @@
     height: 20vh;
     border-radius: 5px;
     font-size: 10px;
-    //left: 5px;
     margin-right: 0px;
     g {opacity: 0.3;}
 }
@@ -72,7 +31,6 @@
     height: 70vh;
     border-radius: 5px;
     font-size: 10px;
-    //left: 5px;
     margin-right: 0px;
     g {opacity: 0.3;}
 }
@@ -152,8 +110,8 @@
     .form-control {
       font-size: 14px; /* default font size */
     }
-        .filter-icon {
-            /* font-size: 24px;  Default size for large screens */
+        .filter-icon-a {
+            font-size: 24px;  /* Default size for large screens */
         }
         .card-text[data-bs-theme="dark"] {
             font-size: 16px; /* Size for medium screens */
@@ -190,7 +148,6 @@
                 height: 20vh;
                 border-radius: 5px;
                 font-size: 20px;
-                //left: 5px;
                 margin-right: 0px;
                 g {opacity: 0.3;}
             }
@@ -198,7 +155,6 @@
                 height: 70vh;
                 border-radius: 5px;
                 font-size: 40px;
-                //left: 5px;
                 margin-right: 0px;
                 g {opacity: 0.3;}
             }
@@ -537,47 +493,7 @@ function checkImageURL(url) {
     }).addTo(map);
     var marker = L.marker();
     var circle = L.circle()
-    {% for obj in objects %}
-      {% if obj.municipalityLatitude %}
-      try {
-        document.getElementById('add-to-calendar-{{ forloop.counter }}').addEventListener('click', function() {
-            var eventName = "{{obj.nameEu}}";
-            var startDate = "{{obj.startDate|date:'Y-m-d'}}";
-            var location = '{{obj.establishmentEu}}';
-            console.log("add-to-calendar-{{ forloop.counter }}");
-            var googleCalendarUrl = `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(eventName)}&dates=${startDate}&location=${encodeURIComponent(location)}&trp=true&sprop=&sprop=name:`;
-
-            window.open(googleCalendarUrl, '_blank');
-        });
-        }
-      catch (error) {
-      console.log("error", error);
-      }
-        var latitude = parseFloat("{{obj.municipalityLatitude}}".replace(",", "."));
-        var longitude = parseFloat("{{obj.municipalityLongitude}}".replace(",", "."));
-        var imageUrl = "{{obj.images}}";
-        var popupContent = "None1";
-        checkImageURL(imageUrl)
-            .then(isValid => {
-                if (isValid) {
-                    popupContent = `{% include 'culture/card.html' %}`;
-                }
-            })
-            .catch(() => {
-                //console.error('Image URL is invalid.');
-            });
-        try{
-
-            var popupContent = `{% include 'culture/card.html' %}`;
-            marker = L.marker([latitude, longitude]).bindPopup(popupContent);
-            markers.addLayer(marker);
-        }
-        catch (error){
-        console.log("error", error);
-        }
-        //circle = L.circle([latitude, longitude], {color: 'green', fillColor: 'green', fillOpacity: 0.5, radius: 2000 }).addTo(map);
-      {% endif %}
-    {% endfor %}
+    {% include 'culture/evet_for_loop.html' %}
     map.addLayer(markers);
     {% if city %}
     var marker_city = L.marker()
