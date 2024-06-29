@@ -60,7 +60,7 @@ jobs:
             --allow-unauthenticated \
             --region=europe-west1 \
             --port=8000 \
-            --memory=500MB \
+            --memory=500M \
             --min-instances=1 \
             --max-instances=1 \
             --service-account=cloud-run-django@optimum-shore-409919.iam.gserviceaccount.com \
