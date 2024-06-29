@@ -1,6 +1,7 @@
 import requests
 import pandas as pd
 from datetime import datetime, timedelta
+from geopy.distance import geodesic
 
 from django.shortcuts import render
 from django.http import JsonResponse
@@ -97,30 +98,52 @@ def culture(request, **kwargs):
             ver_mas = request.POST.get('ver_mas')
             language = request.POST.get('language')
             municipalityEu = request.POST.get('municipalityEu')
+            custom_distance = request.POST.get('custom_distance')
             typeEu = request.POST.get('typeEu')
             provinceNoraCode = request.POST.get('provinceNoraCode')
             startDate = request.POST.get('startDate')
             endDate = request.POST.get('endDate')
             name = request.POST.get('name')
-
-            # Apply filters based on form data
+            if request.session.get('filters'):
+                if typeEu in request.session['filters']:
+                    request.session['filters'].remove(typeEu)
+                else:
+                    request.session['filters'].append(typeEu)
+                request.session['filters'] = request.session['filters']
+            else:
+                request.session['filters'] = [typeEu]
+            context['filters'] = request.session['filters']
+            print("context['filters']", context['filters'])
             if name:
                 events = events.filter(nameEu__icontains=name)
             if language:
                 events = events.filter(language=language)
             if municipalityEu:
                 events = events.filter(municipalityEu=municipalityEu)
-            if typeEu:
-                events = events.filter(typeEu=typeEu)
-            if provinceNoraCode:
-                events = events.filter(provinceNoraCode=provinceNoraCode)
-            if startDate:
-                start_date = datetime.strptime(startDate, "%Y-%m-%d").date()
-                events = events.filter(startDate=start_date)
-            if startDate and endDate:
+                city = Events.objects.filter(municipalityEu=municipalityEu).first()
+                context['city'] = city
+                context['custom_distance'] = int(float(custom_distance) * 1000)
+                lat_city = city.municipalityLatitude
+                lng_city = city.municipalityLongitude
+                city_coords = (lat_city, lng_city)
                 start_date = datetime.strptime(startDate, "%Y-%m-%d")
                 end_date = datetime.strptime(endDate, "%Y-%m-%d")
-                events = events.filter(startDate__gte=start_date, startDate__lte=end_date)
+                event_list = Events.objects.filter(startDate__gte=start_date, startDate__lte=end_date).order_by('startDate')
+                events = []
+                for index, event in enumerate(event_list):
+                    lat_event = event.municipalityLatitude
+                    lng_event = event.municipalityLongitude                    
+                    event_coords = (lat_event, lng_event)
+    
+                    distance = geodesic(city_coords, event_coords).kilometers
+                    if distance <= float(custom_distance):
+                        events.append(event)
+                        print(f"Distance from city to event {event.id}: {distance:.2f} km")                    
+
+            if typeEu:
+                events = events.filter(typeEu__in=request.session['filters'])
+            if provinceNoraCode:
+                events = events.filter(provinceNoraCode=provinceNoraCode)           
             if ver_mas:
                 start_date = datetime.now().date()
                 end_date = start_date + timedelta(days=60)

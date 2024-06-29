@@ -24,7 +24,7 @@ SECRET_KEY = 'django-insecure-%8-lh509x^kfm%62k^jd#*c_aw#$e!b@=!*j_9os7j4gemvtmc
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True if os.getenv('DEBUG') == 'True' else False
-
+DEBUG = True
 ALLOWED_HOSTS = ['*', 'kulturmap-z6zzxsqmma-ew.a.run.app', 'kultur.maps.eus']
 CSRF_TRUSTED_ORIGINS = [f"https://kulturmap-z6zzxsqmma-ew.a.run.app", f'https://kultur.maps.eus']
 

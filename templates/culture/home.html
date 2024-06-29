@@ -271,7 +271,7 @@
                 <div class="d-flex flex-nowrap overflow-auto" style="width: 100%; -ms-overflow-style: none; scrollbar-width: none;">
                     {% for obj in total_typeEu %}
                     <div class="m-2">
-                        <button class="btn btn-light filter-icon" type="submit" title="{{obj}}" name="typeEu" value="{{obj}}">
+                        <button class="btn {% if obj in filters %} btn-dark {% else %} btn-light {% endif %}filter-icon" type="submit" title="{{obj}}" name="typeEu" value="{{obj}}">
                             {% if obj == 'Kontzertua' %}<i class="fa-solid fa-music filter-icon"></i>
                             {% elif obj == 'Hitzaldia' %}<i class="fa-solid fa-comments filter-icon"></i>
                             {% elif obj == 'Bertsolaritza' %}<i class="fa-solid fa-microphone filter-icon"></i>
@@ -349,18 +349,18 @@
                         </div>
                         <div class="col-7">
                             <label for="customRange3" class="form-label">km</label>
-                            <input type="range" class="form-range" min="0" max="50" step="0.5" id="customRange3" value="{{distance}}">
+                            <input type="range" class="form-range" min="0" max="50" step="0.5" id="customRange3" value="{{distance}}" name="custom_distance">
                             <span id="rangeValue">{{distance}}</span>
                         </div>
                     </div>
                     <div class="row align-items-center">
                         <div class="col-6">
                             <label for="startDate">Start:</label>
-                            <input class="form-control" type="date" id="startDate" name="startDate">
+                            <input class="form-control" type="date" id="startDate" name="startDate" required>
                         </div>
                         <div class="col-6">
                             <label for="endDate">End:</label>
-                            <input class="form-control" type="date" id="endDate" name="endDate">
+                            <input class="form-control" type="date" id="endDate" name="endDate" required>
                         </div>
                         {% comment %}
                         <div class="col-2">
@@ -579,6 +579,27 @@ function checkImageURL(url) {
       {% endif %}
     {% endfor %}
     map.addLayer(markers);
+    {% if city %}
+    var marker_city = L.marker()
+    var circle_city = L.circle();
+    if (marker_city) {map.removeLayer(marker_city);}
+    if (circle_city) {map.removeLayer(circle_city);}
+
+    var circleOptions = {
+        radius: {{ custom_distance }}, // Set default radius
+        color: 'red' // Set default color
+    };
+
+        var latitude_city = parseFloat("{{city.municipalityLatitude}}".replace(",", "."));
+        var longitude_city = parseFloat("{{city.municipalityLongitude}}".replace(",", "."));
+        console.log("latitude_city", latitude_city);
+        console.log("longitude_city", longitude_city);        
+        //circle_city = L.circle([latitude_city, latitude_city], {color: 'green', fillColor: 'green', fillOpacity: 0.5, radius: {{ custom_distance }}}).addTo(map);
+        marker_city = L.marker([latitude_city, longitude_city]).addTo(map)
+        circle_city = L.circle([latitude_city, longitude_city], circleOptions).addTo(map);        
+        console.log("circle_city", circle_city);
+
+    {% endif %}
 var locateControl = L.control.locate({
     flyTo: true,
     keepCurrentZoomLevel: true,
