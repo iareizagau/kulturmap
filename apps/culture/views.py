@@ -141,7 +141,10 @@ def culture(request, **kwargs):
                         print(f"Distance from city to event {event.id}: {distance:.2f} km")                    
 
             if typeEu:
-                events = events.filter(typeEu__in=request.session['filters'])
+                if request.session['filters']:
+                    events = events.filter(typeEu__in=request.session['filters'])
+                else:
+                    events = Events.objects.filter(startDate__gte=start_date).order_by('startDate')
             if provinceNoraCode:
                 events = events.filter(provinceNoraCode=provinceNoraCode)           
             if ver_mas:
