@@ -36,7 +36,7 @@
     #map {
     height: 70vh;
     border-radius: 5px;
-    font-size: 10px;
+    font-size: 0px;
     margin-right: 0px;
     g {opacity: 0.3;}
 }
@@ -155,7 +155,7 @@
             #map {
                 height: 70vh;
                 border-radius: 5px;
-                font-size: 40px;
+                font-size: 0px;
                 margin-right: 0px;
                 g {opacity: 0.3;}
             }
@@ -526,6 +526,7 @@ function checkImageURL(url) {
     var longitude = -2.0908440517638573;
     var zoom_map = 8;
     var map2 = L.map('map2', {fullscreenControl: true,}).setView([latitude, longitude], zoom_map);
+    //map2.invalidateSize();
     var CartoDB_Voyager = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
         maxZoom: 20
     }).addTo(map2);
@@ -665,6 +666,7 @@ style.textContent = `
 <script>
     function toggleView(view) {
         var map = document.getElementById('map_col');
+        var map_style = document.getElementById('map')
         var list = document.getElementById('cards');
         const btnList = document.getElementById('btn-list');
         const btnMap = document.getElementById('btn-map');
@@ -676,7 +678,8 @@ style.textContent = `
             btnMap.classList.remove('active');
         } else {
             map.style.display = 'block';
-            list.style.display = 'none';
+            map_style.style.height = '40vh';
+            //list.style.display = 'none';
             btnMap.classList.add('active');
             btnList.classList.remove('active');
         }
