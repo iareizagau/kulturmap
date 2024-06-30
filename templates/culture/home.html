@@ -223,6 +223,7 @@
             </button>
         </div>
     </div>
+    <div class="d-none d-md-block">
     <div id="icons" class="row justify-content-center align-items-center" style="height: 10vh; z-index: 1; position: relative;">
         <div class="col-1">
              <button class="btn btn-light" type="button" title="Anterior">
@@ -261,6 +262,7 @@
             </button>
         </div>
     </div>
+</div>
     <div class="row m-4 d-flex d-none d-sm-flex d-md-flex d-lg-none justify-content-center" style="z-index: 1; position: relative;">
         <div id="btn-list" class="col-4"><button class="btn btn-outline-dark w-100" onclick="toggleView('list')"><i class="fa-solid fa-list-ul filter-icon"></i></button></div>
         <div id="btn-map" class="col-4"><button class="btn btn-outline-dark w-100" onclick="toggleView('map')"><i class="fa-solid fa-map-location-dot filter-icon"></i></button></div>
@@ -456,6 +458,9 @@
   </div>
 </div>
 
+<script>
+    console.log(`La resolución actual de la pantalla es ${window.innerWidth}px por ${window.innerHeight}px`);
+</script>
 <script>
     const rangeInput = document.getElementById('customRange3');
     const rangeValue = document.getElementById('rangeValue');
