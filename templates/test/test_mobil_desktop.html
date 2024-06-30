@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contenido sólo para Escritorio</title>
+    <!-- Incluir CSS de Bootstrap -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Estilos opcionales para mejor visualización */
+        body {
+            padding: 20px;
+        }
+        .desktop-content {
+            padding: 20px;
+            border: 2px solid #007bff;
+            background-color: #e9ecef;
+        }
+    </style>
+</head>
+<body>
+    <!-- Contenido solo visible en pantallas medianas y más grandes -->
+    <div class="d-none d-md-block desktop-content">
+        <h1>Contenido sólo para Escritorio</h1>
+        <p>Este contenido se muestra únicamente en pantallas medianas y más grandes (≥768px).</p>
+    </div>
+
+    <!-- Contenido solo visible en pantallas pequeñas y más pequeñas -->
+    <div class="d-block d-md-none mobile-content">
+        <h1>Contenido para Móviles</h1>
+        <p>Este contenido se muestra únicamente en pantallas pequeñas y más pequeñas (<768px).</p>
+        <button class="btn btn-primary" style="position: fixed; bottom: 20px; right: 20px;">
+            <i class="fas fa-search">holl</i>
+        </button> 
+    </div>
+
+    <!-- Incluir JavaScript de Bootstrap y dependencias -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        console.log(`La resolución actual de la pantalla es ${window.innerWidth}px por ${window.innerHeight}px`);
+    </script>
+</body>
+</html>
