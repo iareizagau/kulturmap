@@ -265,26 +265,21 @@
 
     <!-- Contenido solo visible en pantallas pequeñas y más pequeñas -->
     <div class="d-block d-md-none mobile-content">
+        <div class="row m-4 d-flex d-sm-flex d-md-flex justify-content-center" style="z-index: 1; position: relative;">
+            <div id="btn-list" class="col-6"><button class="btn btn-outline-dark w-100" onclick="toggleView('list')"><i class="fa-solid fa-list-ul filter-icon"></i></button></div>
+            <div id="btn-map" class="col-6"><button class="btn btn-outline-dark w-100" onclick="toggleView('map')"><i class="fa-solid fa-map-location-dot filter-icon"></i></button></div>
+        </div>
         <button class="btn btn-dark" type="button" name="filter_mobile" style="position: fixed; bottom: 20px; right: 20px; z-index: 999;" data-bs-toggle="modal" data-bs-target="#filterMobileModal">
             <i class="fa-solid fa-magnifying-glass"></i>
         </button>        
     </div>
 
-    <div class="row m-4 d-flex d-none d-sm-flex d-md-flex d-lg-none justify-content-center" style="z-index: 1; position: relative;">
-        <div id="btn-list" class="col-4"><button class="btn btn-outline-dark w-100" onclick="toggleView('list')"><i class="fa-solid fa-list-ul filter-icon"></i></button></div>
-        <div id="btn-map" class="col-4"><button class="btn btn-outline-dark w-100" onclick="toggleView('map')"><i class="fa-solid fa-map-location-dot filter-icon"></i></button></div>
-    </div>
+
     <div class="row m-4" style="height: 75vh; z-index: 1; position: relative;">
         <div id="map_col" class="col-sm-12 col-md-12 col-lg-4">
-            <div class="row justify-content-center d-none d-sm-block d-md-none"> <!-- Add this row -->
-                <button id="card-button" class="col-2 btn btn-primary"><i class="fa-solid fa-border-all"></i></button>
-            </div>
             <div class="row" id="map"></div>
         </div>
         <div id="cards" class="col-sm-12 col-md-12 col-lg-8 justify-content-center" style="border-radius: 5px;">
-            <div class="row justify-content-center d-none d-sm-block d-md-none">
-                <button id="map-button" class="col-2 btn btn-primary"><i class="fa-solid fa-map-location-dot"></i></button>
-            </div>
             <div class="row" style="overflow-y: auto; height: 75vh;">
                 <div id="card_list" class="row row-cols-sm-1 row-cols-md-3 row-cols-lg-3 g-2">
                     {% for obj in objects %}
@@ -469,13 +464,34 @@
     <div class="modal-dialog modal-fullscreen">
       <div class="modal-content">
         <div class="modal-header">
-          <a class="source-url" href=""><h1 class="modal-title fs-5" id="filterMobileModalLabel">Filter</h1></a>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <h1 class="modal-title fs-5" id="filterMobileModalLabel">Filter</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-            <div class="row">
-                <div class="col">Filtros</div>
-            </div>
+            <form method="post">{% csrf_token %}
+                <div class="col">
+                    {% for obj in total_typeEu %}
+                    <div class="m-2">
+                        <button class="btn {% if obj in filters %} btn-dark {% else %} btn-light {% endif %}filter-icon" type="submit" title="{{obj}}" name="typeEu" value="{{obj}}">
+                            {% if obj == 'Kontzertua' %}<i class="fa-solid fa-music filter-icon"></i>
+                            {% elif obj == 'Hitzaldia' %}<i class="fa-solid fa-comments filter-icon"></i>
+                            {% elif obj == 'Bertsolaritza' %}<i class="fa-solid fa-microphone filter-icon"></i>
+                            {% elif obj == 'Azoka' %}<i class="fa-solid fa-store filter-icon"></i>
+                            {% elif 'Zinema' in obj %}<i class="fa-solid fa-film filter-icon"></i>
+                            {% elif obj == 'Antzerkia' %}<i class="fa-solid fa-masks-theater filter-icon"></i>
+                            {% elif 'Ekitaldiak' in obj %}<i class="fa-solid fa-calendar-day filter-icon"></i>
+                            {% elif obj == 'Formakuntza' %}<i class="fa-solid fa-graduation-cap filter-icon"></i>
+                            {% elif 'Lehia' in obj %}<i class="fa-solid fa-trophy filter-icon"></i>
+                            {% elif 'Haur' in obj %}<i class="fa-solid fa-child filter-icon"></i><i class="fa-solid fa-child-dress filter-icon"></i>
+                            {% else %}<i class="fa-solid fa-wand-magic-sparkles filter-icon"></i>
+                            {% endif %}
+                            <span>{{obj}}</span>
+                        </button>
+                        <!--<img src="{% static 'img/culture/icon/film.svg' %}" alt="{% static 'img/culture/icon/film.svg' %}">-->
+                    </div>
+                    {% endfor %}
+                </div>
+            </form>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
