@@ -15,6 +15,13 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css" />
 <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster-src.js"></script>
 <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.14/index.global.min.js'></script>
+
+
+
+<link rel="stylesheet" href="{% static 'css\Control.FullScreen.css' %}" />
+<script src="{% static 'js\Control.FullScreen.js' %}"></script>
+<link rel="stylesheet" href="https://raw.githubusercontent.com/brunob/leaflet.fullscreen/master/Control.FullScreen.css" />
+<script src="https://raw.githubusercontent.com/brunob/leaflet.fullscreen/master/Control.FullScreen.js"></script>
 {% include 'culture/calendar_script.html' %}
 {% endblock %}
 {% block content %}
@@ -485,12 +492,29 @@ function checkImageURL(url) {
     var latitude = 42.92252644175441;
     var longitude = -2.0908440517638573;
     var zoom_map = 8;
-    var map = L.map('map', {fullscreenControl: true,}).setView([latitude, longitude], zoom_map);
+    //var map = L.map('map', {fullscreenControl: true,fullscreenControlOptions: {position: 'topleft'}}).setView([latitude, longitude], zoom_map);
+    //var map = L.map('map').setView([latitude, longitude], zoom_map);
+    let map = L.map('map', {
+				tap: false, // ref https://github.com/Leaflet/Leaflet/issues/7255
+				center: new L.LatLng(latitude, longitude),
+				zoom: zoom_map,
+				//fullscreenControl: true,
+				//fullscreenControlOptions: {
+					// optional
+				//	title: 'Show me the fullscreen !',
+				//	titleCancel: 'Exit fullscreen mode'
+				//}
+			});
+    //map.addControl(new L.Control.Fullscreen());
+
+
     var markers = L.markerClusterGroup();
     // https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png
-    var CartoDB_Voyager = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-        maxZoom: 20
-    }).addTo(map);
+    var CartoDB_Voyager = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {maxZoom: 20}).addTo(map);
+
+    var CartoDB_DarkMatter = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {maxZoom: 20});
+
+    //CartoDB_DarkMatter.setOpacity(0.5);
     var marker = L.marker();
     var circle = L.circle()
     {% include 'culture/evet_for_loop.html' %}
@@ -692,19 +716,7 @@ function detectDeviceType() {
 }
     detectDeviceType()
     </script>
-    <script>
-        function updateScreenSize() {
-            var width = window.innerWidth;
-            var height = window.innerHeight;
-            document.getElementById('screen-size').innerText = `Screen size: ${width}px x ${height}px`;
-        }
 
-        // Update screen size on page load
-        updateScreenSize();
-
-        // Update screen size on window resize
-        window.addEventListener('resize', updateScreenSize);
-    </script>
 <script>
 document.addEventListener("DOMContentLoaded", function() {
     // Elementos DOM
@@ -728,4 +740,26 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 });
 </script>
+<script>
+function style_geojson(feature) { 
+    return { 
+            fillColor: 'blue',
+            weight: 2, 
+            opacity: 1, 
+            color: 'white', 
+            dashArray: '3', 
+            fillOpacity: 0.7 
+            }; 
+}    
+    var euskadi = "{% static 'geojson/euskadi.geojson' %}";
+    var nafarroa_iparralde = "{% static 'geojson/nafarroa_iparralde.geojson' %}";
+    {% include 'culture/nafarroa_iparralde.html' %}
+    {% include 'culture/euskadi.html' %}
+    var style_geojson =  {fillColor: 'blue', weight: 2, opacity: 0.0, color: 'white', fillOpacity: 0.2};
+    L.geoJSON(euskadi, style_geojson).addTo(map);
+    L.geoJSON(nafarroa_iparralde, style_geojson).addTo(map);
+//map.fitBounds(euskadi.getBounds());
+
+</script>
+
 {% endblock %}

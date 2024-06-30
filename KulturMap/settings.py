@@ -175,15 +175,15 @@ OPEN_DATA_API_CULTURE_EVENTS = 'https://api.euskadi.eus/culture/events/v1.0/even
 OPEN_DATA_API_CULTURE_EVENTS_UPCOMING = 'https://api.euskadi.eus/culture/events/v1.0/events/upcoming?'
 
 # APPs URLs
-URL_CULTURE = 'https://kulturmap-z6zzxsqmma-ew.a.run.app/culture/'
+URL_CULTURE = 'https://kulturmap-z6zzxsqmma-ew.a.run.app/'
 
 SECURE_SSL_REDIRECT = False
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 
 
-PWA_APP_NAME = 'KulturMap'
-PWA_APP_DESCRIPTION = "KulturMap, no te pierdas los eventos que te interesan que están cerca de ti"
+PWA_APP_NAME = 'KulturMaps'
+PWA_APP_DESCRIPTION = "KulturMaps, no te pierdas los eventos que te interesan que están cerca de ti"
 PWA_APP_THEME_COLOR = '#0A0302'
 PWA_APP_BACKGROUND_COLOR = '#ffffff'
 PWA_APP_DISPLAY = 'standalone'

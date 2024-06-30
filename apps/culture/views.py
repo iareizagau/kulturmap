@@ -39,8 +39,7 @@ def culture(request, **kwargs):
     events = Events.objects.filter(startDate__gte=start_date, startDate__lte=end_date).order_by('startDate')
     # events = Events.objects.all()
     total_municipalityEu = Events.objects.values_list('municipalityEu', flat=True).order_by('municipalityEu').distinct()
-    total_language = set(Events.objects.values_list('language', flat=True).order_by('language').distinct())
-    total_typeEu = Events.objects.values_list('typeEu', flat=True).order_by('typeEu').distinct()
+    total_typeEu = ['Kontzertua', 'Antzerkia', 'Bertsolaritza', 'Dantza', 'Jaiak', 'Jaialdia', 'Formakuntza', 'Ekitaldiak/jardunaldiak', 'Erakusketa', 'Haur jarduera', 'Hitzaldia', 'Lehiaketa', 'Zinema eta ikus-entzunezkoak', 'Azoka', 'Bestelakoa',]
     context['distance'] = 20
 
     if request.POST:
@@ -154,7 +153,6 @@ def culture(request, **kwargs):
 
     context['objects'] = events
     context['municipalities'] = total_municipalityEu
-    context['total_language'] = total_language
     context['total_typeEu'] = total_typeEu
     context['start_date'] = start_date
     context['end_date'] = end_date
@@ -177,7 +175,7 @@ class HomeView(ListView):
     model = Events
     template_name = "culture/home2.html"
     context_object_name = "objects"
-    paginate_by = 3*100
+    paginate_by = 3*20
     ordering = "startDate"
 
     def get_template_names(self, *args, **kwargs):
