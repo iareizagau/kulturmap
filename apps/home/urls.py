@@ -4,5 +4,4 @@ app_name = 'home'
 
 urlpatterns = [
     path('', home, name='home'),
-    path('privacidad', privacidad, name='privacidad')
 ]

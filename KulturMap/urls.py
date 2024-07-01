@@ -18,10 +18,13 @@ from django.contrib import admin
 from django.urls import path, re_path, include
 from KulturMap import settings
 
+from apps.home.views import privacidad
+
 urlpatterns = [
     re_path('', include('pwa.urls')),
     re_path('', include('apps.culture.urls')),  # landing page
     path('admin/', admin.site.urls),
+    path('privacidad', privacidad, name='privacidad')
 ]
 
 
