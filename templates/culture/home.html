@@ -253,23 +253,23 @@ display: block;
             <div class="bottom-nav">
                 <a href="{% url 'culture:home' %}" class="bottom-nav-item btn btn">
                     <i class="fas fa-home"></i>
-                    <span>Home</span>
+                    <span>Hasiera</span>
                 </a>
                 <a href="#" class="bottom-nav-item btn" onclick="toggleView('list')">
                     <i class="fa-solid fa-list-ul"></i>
-                    <span>List</span>
+                    <span>Zerrenda</span>
                 </a>            
                 <a href="#" class="bottom-nav-item btn" data-bs-toggle="modal" data-bs-target="#filterMobileModal">
                     <i class="fas fa-search"></i>
-                    <span>Search</span>
+                    <span>Bilatu</span>
                 </a>            
                 <a href="#" class="bottom-nav-item btn" onclick="toggleView('map')">
                     <i class="fa-solid fa-map-location-dot"></i>
-                    <span>Map</span>
+                    <span>Mapa</span>
                 </a>                    
                 <a href="#" class="bottom-nav-item btn">
                     <i class="fas fa-user"></i>
-                    <span>Profile</span>
+                    <span>Profila</span>
                 </a>
             
             </div>
@@ -353,7 +353,7 @@ display: block;
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title fs-5" id="exampleModalLabel">Filtros</h1>
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Iragazkia</h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
         <form method="post">{% csrf_token %}
@@ -361,7 +361,7 @@ display: block;
 
                     <div class="row align-items-center">
                         <div class="col-5">
-                            <label for="municipality">municipality</label>
+                            <label for="municipality">Herria</label>
                             <select class="form-control" name="municipalityEu" id="municipality">
                                 <option value="">-------</option>
                                 {% for municipality in municipalities %}
@@ -377,11 +377,11 @@ display: block;
                     </div>
                     <div class="row align-items-center">
                         <div class="col-6">
-                            <label for="startDate">Start:</label>
+                            <label for="startDate">Noiztik:</label>
                             <input class="form-control" type="date" id="startDate" name="startDate" required>
                         </div>
                         <div class="col-6">
-                            <label for="endDate">End:</label>
+                            <label for="endDate">Nora:</label>
                             <input class="form-control" type="date" id="endDate" name="endDate" required>
                         </div>
                         {% comment %}
@@ -394,8 +394,8 @@ display: block;
 
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="submit" class="btn btn-primary">Save changes</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Itxi</button>
+        <button type="submit" class="btn btn-primary">Bilatu</button>
       </div>
         </form>
     </div>
