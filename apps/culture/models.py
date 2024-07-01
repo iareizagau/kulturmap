@@ -50,6 +50,13 @@ class Events(models.Model):
     created = models.DateField(auto_created=True, null=True)
     updated = models.DateField(auto_created=True, auto_now_add=True, null=True)
 
+    class Meta:
+        verbose_name = 'Kultur ekintza'
+        verbose_name_plural = 'Kultur ekintzak'
+
+    def __str__(self):
+        return self.nameEu
+
 
 EVENT_TYPE = {
     'Antzerkia': 14

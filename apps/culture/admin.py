@@ -8,5 +8,5 @@ class Events(admin.ModelAdmin):
     list_display = ('id', 'events_id', 'nameEu', 'startDate', 'endDate', 'type', 'typeEu', 'typeEs', 'online',
                     'urlOnlineEu', 'purchaseUrlEu', 'urlNameEu', 'urlEventEu', 'sourceUrlEu',
                     'sourceNameEs', 'municipalityEu', 'openingHoursEu', 'priceEu', 'placeEu', 'companyEu',)
-    list_filter = ('type', 'typeEu', )
+    list_filter = ('typeEu', )
     search_fields = ('nameEu', )

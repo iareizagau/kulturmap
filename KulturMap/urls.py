@@ -27,6 +27,10 @@ urlpatterns = [
     path('privacidad', privacidad, name='privacidad')
 ]
 
+admin.site.site_header = 'Ekitaldien administrazioa'
+admin.site.site_title = 'Ekitaldien administrazioa'
+admin.site.index = 'Ekitaldien administrazioa'
+
 
 if settings.DEBUG:
     from django.conf.urls.static import static
