@@ -87,6 +87,7 @@ def culture(request, **kwargs):
             )
             pass
         else:
+            selected_filters = request.POST.getlist('filters')            
             events = Events.objects.filter(startDate__gte=start_date).order_by('startDate')
             ver_mas = request.POST.get('ver_mas')
             language = request.POST.get('language')
@@ -138,6 +139,9 @@ def culture(request, **kwargs):
                     events = events.filter(typeEu__in=request.session['filters'])
                 else:
                     events = Events.objects.filter(startDate__gte=start_date).order_by('startDate')
+            if selected_filters:
+                events = events.filter(typeEu__in=selected_filters)
+                context['selected_filters'] = selected_filters
             if provinceNoraCode:
                 events = events.filter(provinceNoraCode=provinceNoraCode)           
             if ver_mas:

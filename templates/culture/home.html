@@ -255,7 +255,7 @@ display: block;
                     <i class="fas fa-home"></i>
                     <span>Hasiera</span>
                 </a>
-                <a href="#" class="bottom-nav-item btn" onclick="toggleView('list')">
+                <a id="btn-list" class="bottom-nav-item btn" onclick="toggleView('list')">
                     <i class="fa-solid fa-list-ul"></i>
                     <span>Zerrenda</span>
                 </a>            
@@ -263,7 +263,7 @@ display: block;
                     <i class="fas fa-search"></i>
                     <span>Bilatu</span>
                 </a>            
-                <a href="#" class="bottom-nav-item btn" onclick="toggleView('map')">
+                <a id="btn-map" href="#" class="bottom-nav-item btn" onclick="toggleView('map')">
                     <i class="fa-solid fa-map-location-dot"></i>
                     <span>Mapa</span>
                 </a>                    
@@ -518,16 +518,17 @@ display: block;
 <div class="modal fade" id="filterMobileModal" tabindex="-1" aria-labelledby="filterMobileModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-fullscreen">
       <div class="modal-content">
+        <form method="post">{% csrf_token %}
         <div class="modal-header">
-            <h1 class="modal-title fs-5" id="filterMobileModalLabel">Filter</h1>
+            <h1 class="modal-title fs-5" id="filterMobileModalLabel">Hautatu</h1>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <div class="modal-body">
-            <form method="post">{% csrf_token %}
+        <div class="modal-body">  
                 <div class="col">
                     {% for obj in total_typeEu %}
-                    <div class="m-2">
-                        <button class="btn {% if obj in filters %} btn-dark {% else %} btn-light {% endif %}filter-icon" type="submit" title="{{obj}}" name="typeEu" value="{{obj}}">
+                    <div class="m-2">  
+                        <input class="form-check-input" type="checkbox" name="filters" value="{{ obj }}" id="filter-{{forloop.counter}}" {% if obj in selected_filters %}checked="checked" {% endif %}>
+                        <label class="form-check-label" for="filter-{{forloop.counter}}">                        
                             {% if obj == 'Kontzertua' %}<i class="fa-solid fa-music filter-icon"></i>
                             {% elif obj == 'Hitzaldia' %}<i class="fa-solid fa-comments filter-icon"></i>
                             {% elif obj == 'Bertsolaritza' %}<i class="fa-solid fa-microphone filter-icon"></i>
@@ -541,16 +542,16 @@ display: block;
                             {% else %}<i class="fa-solid fa-wand-magic-sparkles filter-icon"></i>
                             {% endif %}
                             <span>{{obj}}</span>
-                        </button>
+                        </label>
                         <!--<img src="{% static 'img/culture/icon/film.svg' %}" alt="{% static 'img/culture/icon/film.svg' %}">-->
                     </div>
                     {% endfor %}
-                </div>
-            </form>
+                </div>            
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Hautatu</button>
         </div>
+        </form>
       </div>
     </div>
   </div>
@@ -729,12 +730,16 @@ style.textContent = `
         if (view === 'list') {
             map.style.display = 'none';
             list.style.display = 'block';
+            btnList.style.backgroundColor = 'gray';
+            btnMap.style.backgroundColor = 'white';
             btnList.classList.add('active');
             btnMap.classList.remove('active');
         } else {
             map.style.display = 'block';
             map_style.style.height = '40vh';
             //list.style.display = 'none';
+            btnMap.style.backgroundColor = 'gray';
+            btnList.style.backgroundColor = 'white';
             btnMap.classList.add('active');
             btnList.classList.remove('active');
         }
