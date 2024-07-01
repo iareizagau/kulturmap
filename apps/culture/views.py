@@ -17,7 +17,7 @@ def play_console(request, **kwargs):
       "target": {
         "namespace": "android_app",
         "package_name": "eus.maps.kultur.twa",
-        "sha256_cert_fingerprints": ["1E:2A:48:B6:98:71:74:42:DC:3C:20:F9:51:5B:C4:16:FF:87:FE:BE:22:11:82:A2:82:0B:88:BC:3F:F5:86:A0"]
+        "sha256_cert_fingerprints": ["2E:3D:04:FC:10:C2:2C:33:6D:47:8C:75:F3:12:A0:4A:CC:2F:25:50:0E:EB:6D:B6:7B:E9:30:30:E1:8C:3F:45"]
       }
     }]
 
