@@ -12,20 +12,14 @@ from apps.culture.models import Events, EVENT_TYPE
 from KulturMap import settings
 
 def play_console(request, **kwargs):
-    json_data = [
-            {
-                "relation": [
-                "delegate_permission/common.handle_all_urls"
-                ],
-                "target": {
-                "namespace": "android_app",
-                "package_name": "eus.maps.kultur.twa",
-                "sha256_cert_fingerprints": [
-                    "2C:B1:EA:52:EA:48:DC:7B:A7:F2:C3:1E:30:8F:DB:9F:33:7C:B1:24:A2:07:C4:C3:15:33:2E:A4:0A:12:3D:B9"
-                ]
-                }
-            }
-            ]
+    json_data = [{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "eus.maps.kultur.twa",
+        "sha256_cert_fingerprints": ["1E:2A:48:B6:98:71:74:42:DC:3C:20:F9:51:5B:C4:16:FF:87:FE:BE:22:11:82:A2:82:0B:88:BC:3F:F5:86:A0"]
+      }
+    }]
 
     return JsonResponse(json_data, safe=False)
     
