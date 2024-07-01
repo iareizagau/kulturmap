@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile Bottom Navigation Bar</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <style>
+        body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+.content {
+    padding: 20px;
+    text-align: center;
+}
+
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0;
+}
+
+.bottom-nav-item {
+    text-align: center;
+    text-decoration: none;
+    flex: 1;
+}
+
+.bottom-nav-item i {
+    font-size: 24px;
+}
+
+.bottom-nav-item span {
+    display: block;
+}
+
+    </style>
+    <!-- Main content -->
+    <div class="content">
+        <h1>Welcome to the Home Page</h1>
+    </div>
+
+    <!-- Bottom Navigation Bar -->
+    <div class="bottom-nav">
+        <a href="#" class="bottom-nav-item btn btn-primary">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </a>
+        <a href="#" class="bottom-nav-item btn">
+            <i class="fas fa-user"></i>
+            <span>List</span>
+        </a>            
+        <a href="#" class="bottom-nav-item btn">
+            <i class="fas fa-search"></i>
+            <span>Search</span>
+        </a>
+        <a href="#" class="bottom-nav-item btn">
+            <i class="fas fa-search"></i>
+            <span>Map</span>
+        </a>        
+        <a href="#" class="bottom-nav-item btn">
+            <i class="fas fa-user"></i>
+            <span>Profile</span>
+        </a>
+    
+    </div>
+
+    <!-- Font Awesome for Icons -->
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</body>
+</html>

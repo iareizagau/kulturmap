@@ -198,6 +198,36 @@
             }
         }
     </style>
+<style>
+
+.bottom-nav {
+position: fixed;
+bottom: 0;
+left: 0;
+width: 100%;
+display: flex;
+justify-content: space-around;
+padding: 10px 0;
+background-color: white;
+}
+
+.bottom-nav-item {
+text-align: center;
+text-decoration: none;
+flex: 1;
+background-color: rgba(255, 255, 255, 0.956);
+border-radius: 5px;
+}
+
+.bottom-nav-item i {
+font-size: 24px;
+}
+
+.bottom-nav-item span {
+display: block;
+}
+
+</style>    
 <div class="container-fluid">
     <div id="search" class="row justify-content-center align-items-center" style="height: 5vh; z-index: 10; position: relative;">
         <div class="col-2"></div>
@@ -216,10 +246,33 @@
                 <i class="fa-regular fa-calendar" style="color: #ffffff"></i>
             </button>
         </div>
-        <div class="col-3 mx-2 d-block d-md-none">
+        <div class="col-3 mx-2 d-block d-md-none">            
             <button class="btn btn-dark" type="button" name="filter-button" data-bs-toggle="modal" data-bs-target="#exampleModal">
                 <i class="fa-solid fa-sliders" style="color: #ffffff"></i>
-            </button>
+            </button>            
+            <div class="bottom-nav">
+                <a href="{% url 'culture:home' %}" class="bottom-nav-item btn btn">
+                    <i class="fas fa-home"></i>
+                    <span>Home</span>
+                </a>
+                <a href="#" class="bottom-nav-item btn" onclick="toggleView('list')">
+                    <i class="fa-solid fa-list-ul"></i>
+                    <span>List</span>
+                </a>            
+                <a href="#" class="bottom-nav-item btn" data-bs-toggle="modal" data-bs-target="#filterMobileModal">
+                    <i class="fas fa-search"></i>
+                    <span>Search</span>
+                </a>            
+                <a href="#" class="bottom-nav-item btn" onclick="toggleView('map')">
+                    <i class="fa-solid fa-map-location-dot"></i>
+                    <span>Map</span>
+                </a>                    
+                <a href="#" class="bottom-nav-item btn">
+                    <i class="fas fa-user"></i>
+                    <span>Profile</span>
+                </a>
+            
+            </div>
         </div>        
     </div>
     <div class="d-none d-md-block desktop-content">
@@ -265,13 +318,15 @@
 
     <!-- Contenido solo visible en pantallas pequeñas y más pequeñas -->
     <div class="d-block d-md-none mobile-content">
+        {% comment %}
         <div class="row m-4 d-flex d-sm-flex d-md-flex justify-content-center" style="z-index: 1; position: relative;">
             <div id="btn-list" class="col-6"><button class="btn btn-outline-dark w-100" onclick="toggleView('list')"><i class="fa-solid fa-list-ul filter-icon"></i></button></div>
             <div id="btn-map" class="col-6"><button class="btn btn-outline-dark w-100" onclick="toggleView('map')"><i class="fa-solid fa-map-location-dot filter-icon"></i></button></div>
-        </div>
+        </div>        
         <button class="btn btn-dark" type="button" name="filter_mobile" style="position: fixed; bottom: 20px; right: 20px; z-index: 999;" data-bs-toggle="modal" data-bs-target="#filterMobileModal">
             <i class="fa-solid fa-magnifying-glass"></i>
-        </button>        
+        </button>    
+        {% endcomment %}    
     </div>
 
 
@@ -686,9 +741,7 @@ style.textContent = `
     }
 
 </script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
 <script>
     // JavaScript to handle the modal content update
     $('#infoModal').on('show.bs.modal', function (event) {
