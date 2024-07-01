@@ -229,7 +229,7 @@ display: block;
 
 </style>    
 <div class="container-fluid">
-    <div id="search" class="row justify-content-center align-items-center" style="height: 5vh; z-index: 10; position: relative;">
+    <div id="search" class="row justify-content-center align-items-center m-2" style="height: 5vh; z-index: 10; position: relative;">
         <div class="col-2"></div>
         <form class="col-6" method="post">{% csrf_token %}
             <input id="name" class="form-control" type="text" name="name" placeholder="Bilatu">
@@ -330,7 +330,7 @@ display: block;
     </div>
 
 
-    <div class="row m-4" style="height: 75vh; z-index: 1; position: relative;">
+    <div class="row m-2" style="height: 75vh; z-index: 1; position: relative;">
         <div id="map_col" class="col-sm-12 col-md-12 col-lg-4">
             <div class="row" id="map"></div>
         </div>
